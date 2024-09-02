@@ -1,1 +1,32 @@
-# Write Kubernetes Deployment Script
+apiVersion: apps/v1 #specifies the api version
+kind: Deployment #defines the resource as a deployment
+metadata:
+  name: book-catalog #sets the name of the deployment
+spec: #begins the specifications for the deployment of book-catalog
+  replicas: 1 #no. of pod replicas
+  selector: #how it finds the pods to manage
+    matchLabels:
+      app: book-catalog #selects the labels which are book-catalog
+  template: #defines the template for the pods
+    metadata:
+      labels:
+        app: book-catalog #labels pods
+    spec: #begins pod spec
+      containers: #lists the containers
+        - name: book-catalog #sets the container name
+          image: deploypart2.azurecr.io/book-catalog:v1 #specifies the link for docker image
+          ports: #lists the ports exposed
+            - containerPort: 8000 #port which is being listened on
+---
+apiVersion: v1 #api kurburnetes version
+kind: Service #defines the resource as a service
+metadata:
+  name: book-catalog-service #sets the name for the service
+spec: #begins spec for the service
+  selector:
+    app: book-catalog #selects pods with this label
+  ports:
+    - protocol: TCP #defines communication protocol
+      port: 80 #listening on port 80
+      targetPort: 8000 #port to be forwarded to
+  type: LoadBalancer #specifies the type of service which is load balance which will expose service externally
